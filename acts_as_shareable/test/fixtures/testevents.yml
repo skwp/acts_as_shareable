@@ -1,0 +1,7 @@
+party:
+  id: 1
+  title: Party Event
+
+moving:
+  id: 2
+  title: Moving Event

@@ -1,0 +1,58 @@
+ActsAsShareable
+===============
+
+Allows for model objects to be shared to other models, the 'sharing' is also associated to a user
+
+== Resources
+
+Install
+ * Run the following command:
+ 
+ script/plugin install 
+ * There's a generator to create the database migration, but it might not work
+ * Create a new rails migration and add the following self.up and self.down methods
+ 
+	class CreateShares < ActiveRecord::Migration
+	  def self.up
+	    create_table :shares, :force => true do |t|
+	      t.column :user_id,            :integer
+	      t.column :shareable_type,     :string, :limit => 30
+	      t.column :shareable_id,       :integer
+	      t.column :shared_to_type,     :string, :limit => 30
+	      t.column :shared_to_id,       :integer
+	      t.column :created_at,         :datetime
+	      t.column :updated_at,         :datetime
+	    end
+	  end
+	
+	  def self.down
+	    drop_table :shares
+	  end
+	end
+
+== Usage
+ 
+ * Make you ActiveRecord model shareable.
+ 
+ class Book < ActiveRecord::Base
+ 	acts_as_shareable
+ end
+ 
+ * Share a new book to a group
+ 
+ book = Book.new
+ group = Group.new
+ book.share_to(group,by_user)
+ 
+ * Can find shared objects by sharable_type, where they are shared, or the user that shared them
+ 
+ Book.find_by_shared_to(group)
+ Book.find_shares_by_user(user)
+
+== Credits
+
+Infulenced by plugins and tutorials by Techknow @ juixe.com
+
+== More
+jduff@overlay.tv
+http://blog.overlay.tv
