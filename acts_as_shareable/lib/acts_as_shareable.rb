@@ -104,6 +104,30 @@ module CC
                           shareable, id, to, object.id, by_user.id])
           return !s.nil?
         end
+        
+        def find_shared_to_by_type(shared_type, *opts)
+          shareable = ActiveRecord::Base.send(:class_name_of_active_record_descendant, self.class).to_s
+          shared_to = ActiveRecord::Base.send(:class_name_of_active_record_descendant, shared_type)
+          options = {
+            :joins=>"LEFT OUTER JOIN shares s ON s.shared_to_id = #{Object.const_get(shared_to).table_name}.id",
+            :select=>"#{Object.const_get(shared_to).table_name}.*",
+            :conditions => ["s.shareable_type =? and s.shared_to_type=? and s.shareable_id = ?", 
+                            shareable, shared_to.to_s, id],
+            :order => "s.created_at DESC"}
+
+          Object.const_get(shared_to).find(:all, merge_options(options,opts))
+        end
+        
+        private
+        def merge_options(options, opts)
+          if opts && opts[0].is_a?(Hash) && opts[0].has_key?(:conditions)
+            cond = opts[0].delete(:conditions)
+            options[:conditions][0] << " " << cond.delete_at(0)
+            options[:conditions] + cond
+          end
+          options.merge!(opts[0]) if opts && opts[0].is_a?(Hash)
+          return options
+        end
       end
     end
   end

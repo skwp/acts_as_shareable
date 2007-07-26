@@ -133,4 +133,14 @@ class ActsAsShareableTest < Test::Unit::TestCase
     assert_equal 1, shares.size, "should be 3 books shared to reading group"
   end
   
+  def test_find_shares_by_type
+    shared_to = testbooks(:ruby).find_shared_to_by_type(Testgroup)
+    assert_equal 1, shared_to.size, "should be shared to one place"
+    assert_equal testgroups(:reading), shared_to[0], "should be shared to the reading group"
+    
+    shared_to = testbooks(:agile).find_shared_to_by_type(Testgroup, :limit=>1)
+    assert_equal 1, shared_to.size, "should be shared to one place (because of limit)"
+    assert_equal testgroups(:fun), shared_to[0], "should be shared to the reading group"
+  end
+  
 end
