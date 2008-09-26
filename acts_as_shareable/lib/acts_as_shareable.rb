@@ -76,9 +76,9 @@ module CC
       module InstanceMethods
         # Add instance methods here
         
-        def share_to(object, by_user)
+        def share_to(object, by_user, options={})
           unless shared_to?(object, by_user)
-            s = Share.new(:user_id=>by_user.id, :shared_to_type=>object.class.to_s, :shared_to_id=>object.id)
+            s = Share.new(options.merge(:user_id=>by_user.id, :shared_to_type=>object.class.to_s, :shared_to_id=>object.id))
             self.shares << s
             #object.sharings << s
             self.save!
